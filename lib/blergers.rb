@@ -14,23 +14,12 @@ module Blergers
       self.order(date: :desc).limit(10).offset((n-1)*10)
     end
 
-## count_tagged_by(tags) where the tag parameter is an array of tag strings
+    ## count_tagged_by(tags) where the tag parameter is an array of tag strings
     def self.count_tagged_by(tags)
-      tag_counts = []
-      # select("id")
-      tag_ids = []
-      tags.each do |x|
-        t_id = Blergers::Tag.where(name: x).pluck(:id)
-        tag_ids << t_id[0]
-      end
-      tag_ids.each do |x|
-        tag_count = Blergers::PostTag.where("tag_id == #{x}").count
-        tag_name = Blergers::Tag.where(id: x).pluck(:name)
-        tag_name = tag_name[0]
-        tag_counts << [tag_count, tag_name]
-      end
+      tag_counts = Blergers::Tag.joins(:post_tags).where(name: tags).group(:name).count
+      tag_counts = tag_counts.sort_by { |key, value| value }.reverse.to_a
       puts "** Post Tagged Count Search Query **"
-      tag_counts.each do |tag_count, tag_name|
+      tag_counts.each do |tag_name, tag_count|
         puts "#{tag_name} -> #{tag_count}"
       end
     end
@@ -40,25 +29,11 @@ module Blergers
     has_many :post_tags
     has_many :posts, through: :post_tags
 
-    attr_reader :tag_counts
-
-    def self.tag_total
-      @tag_counts = []
-      self.all.each do |x|
-        t_id = x.id
-        tag_count = Blergers::PostTag.where("tag_id == #{x.id}").count
-        tag_name = self.where(id: x.id).pluck(:name)
-        tag_name = tag_name[0]
-        @tag_counts << [tag_count, tag_name]
-      end
-      @tag_counts
-    end
-
     def self.top_tags
-      self.tag_total
-      tag_counts = @tag_counts.sort.reverse.each_slice(10).to_a
+      tag_counts = Tag.joins(:post_tags).group(:name).count
+      tag_counts = tag_counts.sort_by { |key, value| value }.reverse.each_slice(10).to_a
       puts "** Top 10 Most Used Tags **"
-      tag_counts[0].each do |tag_count, tag_name|
+      tag_counts[0].each do |tag_name, tag_count|
         puts "#{tag_name} -> #{tag_count}"
       end
     end
