@@ -16,16 +16,11 @@ module Blergers
 
     ## count_tagged_by(tags) where the tag parameter is an array of tag strings
     def self.count_tagged_by(tags)
-      tag_counts = Blergers::Tag.joins(:post_tags).where(name: tags).group(:name).count
-      tag_counts = tag_counts.sort_by { |key, value| value }.reverse.to_a
-      total_posts = []
-      tag_counts.each do |tag_name, tag_count|
-        total_posts << tag_count
-      end
-      total_posts = total_posts.sum
+      tag_counts = Blergers::Tag.joins(:post_tags).where(name: tags).group(:post_id).count.count
       puts "** Post Tagged Count Search Query Total **"
-      puts "#{total_posts}".center(42)
+      puts "#{tag_counts}"
     end
+
   end
 
   class Tag < ActiveRecord::Base
@@ -69,4 +64,3 @@ def run!
   end
 end
 
-binding.pry
