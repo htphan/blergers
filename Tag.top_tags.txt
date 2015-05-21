@@ -1,0 +1,22 @@
+[10] pry(main)> Blergers::Tag.top_tags
+** Top 10 Most Used Tags **
+Personal -> 196
+Music -> 62
+Programming -> 54
+Poetry -> 54
+Linux -> 52
+LISP -> 41
+Quotes -> 30
+Linkpost -> 28
+Programming Languages -> 26
+Self-Learning -> 24
+=> [[196, "Personal"],
+ [62, "Music"],
+ [54, "Programming"],
+ [54, "Poetry"],
+ [52, "Linux"],
+ [41, "LISP"],
+ [30, "Quotes"],
+ [28, "Linkpost"],
+ [26, "Programming Languages"],
+ [24, "Self-Learning"]]
